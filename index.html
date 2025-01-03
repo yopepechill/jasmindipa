@@ -162,13 +162,32 @@
 </html>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyQhhvi6cKXg5J0uudw9PTrPCdzmIhbbrSVnk_Be-d4Db0DIJs18Lc8gzIj0GHvxJAC/exec'
-  const form = document.forms['order-form']
+      const scriptURL = "https://script.google.com/macros/s/AKfycbyQhhvi6cKXg5J0uudw9PTrPCdzmIhbbrSVnk_Be-d4Db0DIJs18Lc8gzIj0GHvxJAC/exec";
+      const form = document.forms["order-form"];
 
-  form.addEventListener('submit', e => {
-    e.preventDefault()
-    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-      .then(response => console.log('Success!', response))
-      .catch(error => console.error('Error!', error.message))
-  })
-</script>
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Mencegah reload halaman
+
+        const submitButton = form.querySelector("[type='submit']");
+        submitButton.disabled = true; // Menonaktifkan tombol saat proses berlangsung
+        submitButton.textContent = "Loading..."; // Menampilkan indikator loading
+
+        try {
+          const response = await fetch(scriptURL, { method: "POST", body: new FormData(form) });
+          if (response.ok) {
+            console.log("Success!", response);
+            alert("Form submitted successfully!");
+            form.reset(); // Mengosongkan form setelah berhasil dikirim
+          } else {
+            console.error("Error!", response.statusText);
+            alert("Submission failed. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error!", error.message);
+          alert("An error occurred: " + error.message);
+        } finally {
+          submitButton.disabled = false; // Mengaktifkan kembali tombol
+          submitButton.textContent = "Submit"; // Mengembalikan teks tombol
+        }
+      });
+    </script>
